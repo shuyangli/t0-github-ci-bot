@@ -1,0 +1,15 @@
+{
+    "workflow_run": {
+        "conclusion": "failure",
+        "head_sha": "1234567890",
+        "run_attempt": 1,
+        "pull_requests": [
+            {
+                "number": 123,
+                "base": {
+                    "ref": "main"
+                }
+            }
+        ]
+    }
+}

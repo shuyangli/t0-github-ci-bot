@@ -2,7 +2,7 @@ name: TensorZero CI Diagnosis Bot
 
 on:
   workflow_run:
-    # TODO: Replace with the workflow(s) to monitor.
+    # TODO: Replace with the actual workflow(s) to monitor. This doesn't seem to work yet.
     workflows: ["Dummy CI Failure"]
     types:
       - completed
@@ -13,10 +13,11 @@ permissions:
   actions: read
 
 jobs:
-  diagnose:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+  gather-diff:
+    # TODO: Triggering not working yet
+    # if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
-    name: Collect failure context and call LLM
+    name: Gather failure context
     env:
       DIAGNOSTICS_DIR: diagnostics
     steps:
@@ -76,6 +77,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  diagnose:
+    needs: gather-diff
+    runs-on: ubuntu-latest
+    name: Call LLM diagnostics
+    env:
+      DIAGNOSTICS_DIR: diagnostics
+      # TODO: need to set up API keys for T0
+    steps:
       - name: Build prompt payload for LLM
         run: |
           cat <<'PROMPT' > "${DIAGNOSTICS_DIR}/prompt.json"
@@ -89,7 +98,7 @@ jobs:
             "error_snippets_path": "${DIAGNOSTICS_DIR}/logs/error-snippets.log",
             "notes": "TODO: enrich prompt with additional repository context (e.g., recent commits, owner instructions)."
           }
-# PROMPT
+          PROMPT
 
       - name: Call LLM diagnostics (placeholder)
         run: |
