@@ -76,6 +76,8 @@ def handle_workflow_run(payload: dict[str, Any]) -> None:
         looks_like_bot(actor_login),
     )
 
+    logger.info(json.dumps(payload, indent=2))
+
 
 def handle_check_suite(payload: dict[str, Any]) -> None:
     check_suite = payload.get("check_suite") or {}
