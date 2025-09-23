@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 app = FastAPI()
 
@@ -12,6 +12,11 @@ app = FastAPI()
 async def hello() -> dict[str, str]:
     return {"message": "Hello from the TensorZero CI bot"}
 
+@app.post("/webhook")
+async def print_webhook_body(request: Request) -> dict[str, str]:
+    body = await request.json()
+    print(body)
+    return {"message": "Hello from the TensorZero CI bot"}
 
 def main() -> None:
     host = os.getenv("HOST", "0.0.0.0")
