@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   gather-diff:
+    # TODO: only do this against main branch
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     name: Gather failure context
