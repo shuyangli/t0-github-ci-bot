@@ -14,13 +14,20 @@ permissions:
 
 jobs:
   gather-diff:
-    # TODO: Triggering not working yet
-    # if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     name: Gather failure context
     env:
       DIAGNOSTICS_DIR: diagnostics
     steps:
+      # TODO: delete this before actually sending it out
+      - name: Install GitHub CLI (act local only)
+        run: |
+          type -p gh >/dev/null || (
+            sudo apt-get update &&
+            sudo apt-get install -y gh
+          )
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -63,19 +70,30 @@ jobs:
         run: |
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
 
-      - name: Download failing workflow logs
-        run: |
-          run_id="${{ steps.pr-info.outputs.run-id }}"
-          attempt="${{ steps.pr-info.outputs.run-attempt }}"
-          mkdir -p "${DIAGNOSTICS_DIR}/logs"
-          gh api \
-            -H "Accept: application/zip" \
-            "/repos/${{ github.repository }}/actions/runs/${run_id}/logs" > "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.zip"
-          unzip -p "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.zip" > "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.log"
-          tail -n 400 "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.log" > "${DIAGNOSTICS_DIR}/logs/failure-tail.log"
-          grep -iE 'fail|error|exception|traceback' "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.log" | tail -n 200 > "${DIAGNOSTICS_DIR}/logs/error-snippets.log" || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # TODO: capture logs properly
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name:  ${{ github.event.workflow_run.name }}
+          path: ${DIAGNOSTICS_DIR}
+
+      - name: Display structure of downloaded files
+        run: ls -R ${DIAGNOSTICS_DIR}
+
+      # - name: Download failing workflow logs
+      #   run: |
+      #     run_id="${{ steps.pr-info.outputs.run-id }}"
+      #     attempt="${{ steps.pr-info.outputs.run-attempt }}"
+      #     mkdir -p "${DIAGNOSTICS_DIR}/logs"
+      #     echo "/repos/${{ github.repository }}/actions/runs/${run_id}/logs" > "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.json";
+      #     gh api \
+      #       -H "Accept: application/json" \
+      #       "/repos/${{ github.repository }}/actions/runs/${run_id}/logs" > "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.json"
+      #     cat "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.json"
+      #   # tail -n 400 "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.json" > "${DIAGNOSTICS_DIR}/logs/failure-tail.log"
+      #   # grep -iE 'fail|error|exception|traceback' "${DIAGNOSTICS_DIR}/logs/run-${run_id}-attempt-${attempt}.log" | tail -n 200 > "${DIAGNOSTICS_DIR}/logs/error-snippets.log" || true
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   diagnose:
     needs: gather-diff
