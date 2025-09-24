@@ -96,7 +96,7 @@ jobs:
       # Consider also downloading artifacts here
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@87ad382f9485ae6a7c257f2ad699d1ad15651d2e
+        uses: shuyangli/t0-typescript-action@2854bbe88ae5a82b20a6fb0409091625016ce702
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           openai-api-key: ${{ secrets.OPENAIAPIKEY }}
