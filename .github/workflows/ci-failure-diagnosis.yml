@@ -42,7 +42,7 @@ jobs:
       # Add any steps that talk to the container here
       - name: Wait for gateway
         run: |
-          for i in {1..100}; do
+          for i in {1..20}; do
             curl -fsS http://localhost:3000/health && exit 0
             sleep 3
           done
