@@ -78,8 +78,8 @@ jobs:
         uses: shuyangli/t0-typescript-action@fd779742ef2f77366d5564fd542e2ffe63dbb76f
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          diff-summary-path: ${{ env.DIFF_SUMMARY_PATH }}
-          full-diff-path: ${{ env.FULL_DIFF_PATH }}
+          diff-summary-path: diagnostics/diff-summary.txt
+          full-diff-path: diagnostics/pr.diff
           artifacts-dir: artifacts
       
       - name: Upload diagnostics bundle
