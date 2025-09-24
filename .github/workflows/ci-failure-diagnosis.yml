@@ -81,12 +81,12 @@ jobs:
         with:
           name: ci-failure-diagnostics
           path: |
-            ${DIAGNOSTICS_DIR}/diff-summary.txt
-            ${DIAGNOSTICS_DIR}/diff.patch
-            ${DIAGNOSTICS_DIR}/logs/failure-tail.log
-            ${DIAGNOSTICS_DIR}/logs/error-snippets.log
-            ${DIAGNOSTICS_DIR}/artifacts/artifacts.json
-            ${DIAGNOSTICS_DIR}/artifacts/artifact-names.txt
+            diagnostics/diff-summary.txt
+            diagnostics/diff.patch
+            diagnostics/logs/failure-tail.log
+            diagnostics/logs/error-snippets.log
+            diagnostics/artifacts/artifacts.json
+            diagnostics/artifacts/artifact-names.txt
 
       # TODO: capture logs properly
       # - name: Discover workflow artifacts
