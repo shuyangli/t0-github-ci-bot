@@ -37,7 +37,7 @@ jobs:
           docker pull tensorzero/gateway:latest
           docker run -d --rm \
             -p 3000:3000 \
-            tensorzero/gateway:latest
+            tensorzero/gateway:latest --default-config
 
       # Add any steps that talk to the container here
       - name: Wait for gateway
