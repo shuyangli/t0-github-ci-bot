@@ -65,12 +65,12 @@ jobs:
       - name: Capture PR diff summary
         run: |
           git diff --stat "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff-summary.txt"
-          echo "${DIAGNOSTICS_DIR}/diff-summary.txt" >> $DIFF_SUMMARY_PATH
+          export DIFF_SUMMARY_PATH="${DIAGNOSTICS_DIR}/diff-summary.txt"
 
       - name: Capture full PR diff
         run: |
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/pr.diff"
-          echo "${DIAGNOSTICS_DIR}/pr.diff" >> $FULL_DIFF_PATH
+          export FULL_DIFF_PATH="${DIAGNOSTICS_DIR}/pr.diff"
 
       # Consider also downloading artifacts here
 
