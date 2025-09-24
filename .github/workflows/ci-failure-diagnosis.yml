@@ -53,6 +53,10 @@ jobs:
             core.setOutput('head-sha', run.head_sha);
             core.setOutput('run-id', run.id);
             core.setOutput('run-attempt', run.run_attempt);
+      
+      - name: Prepare diagnostics workspace
+        run: |
+          mkdir -p "${DIAGNOSTICS_DIR}"
 
       - name: Fetch base branch for diff
         run: |
