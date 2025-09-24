@@ -96,9 +96,10 @@ jobs:
       # Consider also downloading artifacts here
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@05712d698d4080e9a73283cda180028418852af7
+        uses: shuyangli/t0-typescript-action@7027b7cb10f56526be0a308abee9cbf0887111d9
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAIAPIKEY }}
           tensorzero-base-url: http://localhost:3000
           diff-summary-path: diagnostics/diff-summary.txt
           full-diff-path: diagnostics/pr.diff
