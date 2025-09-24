@@ -29,6 +29,26 @@ jobs:
             sudo apt-get install -y gh
           )
 
+      - name: Start TensorZero gateway
+        env:
+          TENSORZERO_CLICKHOUSE_URL: ""
+          OPENAI_API_KEY: ${{ secrets.OPENAIAPIKEY }}
+        run: |
+          docker pull tensorzero/gateway:latest
+          docker run -d --rm \
+            -p 3000:3000 \
+            tensorzero/gateway:latest
+
+      # Add any steps that talk to the container here
+      - name: Wait for gateway
+        run: |
+          for i in {1..10}; do
+            curl -fsS http://localhost:3000/health && exit 0
+            sleep 3
+          done
+          echo "Gateway never became ready" >&2
+          exit 1
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -233,3 +253,8 @@ jobs:
                 `Artifacts: ci-failure-diagnostics`
               ].join('\n')
             });
+      
+
+      - name: Stop container
+        if: always()
+        run: docker stop tensorzero-gateway
