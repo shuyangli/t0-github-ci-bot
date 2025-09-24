@@ -58,10 +58,6 @@ jobs:
         run: |
           git fetch origin "${{ steps.pr-info.outputs.base-ref }}"
 
-      - name: Prepare diagnostics workspace
-        run: |
-          mkdir -p "${DIAGNOSTICS_DIR}"
-
       - name: Capture PR diff summary
         run: |
           git diff --stat "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff-summary.txt"
@@ -71,9 +67,22 @@ jobs:
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@07f8b74d567fa432992854c6eee5a46f8565cbbf
+        uses: shuyangli/t0-typescript-action@be4c4408369f49b537a378a9d9c5a5aca3fe88b2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts-dir: artifacts
+      
+      - name: Upload diagnostics bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-diagnostics
+          path: |
+            ${DIAGNOSTICS_DIR}/diff-summary.txt
+            ${DIAGNOSTICS_DIR}/diff.patch
+            ${DIAGNOSTICS_DIR}/logs/failure-tail.log
+            ${DIAGNOSTICS_DIR}/logs/error-snippets.log
+            ${DIAGNOSTICS_DIR}/artifacts/artifacts.json
+            ${DIAGNOSTICS_DIR}/artifacts/artifact-names.txt
 
       # TODO: capture logs properly
       # - name: Discover workflow artifacts
