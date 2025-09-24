@@ -31,7 +31,7 @@ jobs:
 
       - name: Start TensorZero gateway
         env:
-          TENSORZERO_CLICKHOUSE_URL: ""
+          TENSORZERO_CLICKHOUSE_URL: ${{ secrets.CLICKHOUSE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAIAPIKEY }}
         run: |
           docker pull tensorzero/gateway:latest
