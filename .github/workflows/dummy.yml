@@ -1,4 +1,4 @@
-name: Dummy
+name: Dummy CI Failure
 
 on:
   pull_request:
@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - run: echo "This is a dummy action"; exit 1
+      - run: echo "This is a dummy CI failure"; exit 1
