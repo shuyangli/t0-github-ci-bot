@@ -75,7 +75,7 @@ jobs:
       # Consider also downloading artifacts here
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@63acf502981cad300ddc289f9e6f2b5d22c3460e
+        uses: shuyangli/t0-typescript-action@fd779742ef2f77366d5564fd542e2ffe63dbb76f
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           diff-summary-path: ${{ env.DIFF_SUMMARY_PATH }}
