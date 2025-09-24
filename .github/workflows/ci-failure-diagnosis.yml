@@ -71,7 +71,7 @@ jobs:
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action
+        uses: shuyangli/t0-typescript-action@07f8b74d567fa432992854c6eee5a46f8565cbbf
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
