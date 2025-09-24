@@ -65,15 +65,21 @@ jobs:
       - name: Capture PR diff summary
         run: |
           git diff --stat "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff-summary.txt"
+          echo "${DIAGNOSTICS_DIR}/diff-summary.txt" >> $DIFF_SUMMARY_PATH
 
       - name: Capture full PR diff
         run: |
-          git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
+          git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/pr.diff"
+          echo "${DIAGNOSTICS_DIR}/pr.diff" >> $FULL_DIFF_PATH
+
+      # Consider also downloading artifacts here
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@cc873c9711f2f384788af35d4ff2cb8ff7f2cb49
+        uses: shuyangli/t0-typescript-action@63acf502981cad300ddc289f9e6f2b5d22c3460e
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          diff-summary-path: ${{ env.DIFF_SUMMARY_PATH }}
+          full-diff-path: ${{ env.FULL_DIFF_PATH }}
           artifacts-dir: artifacts
       
       - name: Upload diagnostics bundle
