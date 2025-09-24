@@ -30,18 +30,14 @@ jobs:
           )
 
       - name: Start TensorZero gateway
-        env:
-          TENSORZERO_CLICKHOUSE_URL: ${{ secrets.CLICKHOUSE_URL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAIAPIKEY }}
         run: |
           docker pull tensorzero/gateway:latest
           docker run -d --rm \
+            -e TENSORZERO_CLICKHOUSE_URL=${{ secrets.CLICKHOUSE_URL }} \
+            -e OPENAI_API_KEY=${{ secrets.OPENAIAPIKEY }} \
             -p 3000:3000 \
             tensorzero/gateway:latest --default-config
 
-      # Add any steps that talk to the container here
-      - name: Wait for gateway
-        run: |
           for i in {1..20}; do
             curl -fsS http://localhost:3000/health && exit 0
             sleep 3
