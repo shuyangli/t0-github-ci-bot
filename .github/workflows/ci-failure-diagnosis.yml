@@ -71,11 +71,68 @@ jobs:
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
 
       # TODO: capture logs properly
-      - name: Download workflow artifacts
-        uses: actions/download-artifact@v4
+      - name: Discover workflow artifacts
+        id: list-artifacts
+        uses: actions/github-script@v7
+        env:
+          RUN_ID: ${{ steps.pr-info.outputs.run-id }}
         with:
-          name:  ${{ github.event.workflow_run.name }}
-          path: ${DIAGNOSTICS_DIR}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const runId = process.env.RUN_ID;
+            const { owner, repo } = context.repo;
+
+            const artifacts = await github.paginate(
+              github.rest.actions.listWorkflowRunArtifacts,
+              {
+                owner,
+                repo,
+                run_id: runId,
+                per_page: 100,
+              }
+            );
+
+            core.startGroup(`Artifacts for workflow run ${runId}`);
+            if (!artifacts.length) {
+              core.warning('No artifacts found for the failing workflow run.');
+            } else {
+              for (const artifact of artifacts) {
+                core.info(`• ${artifact.name} (${artifact.size_in_bytes} bytes)`);
+              }
+            }
+            core.endGroup();
+
+            const diagnosticsDir = process.env.DIAGNOSTICS_DIR;
+            const artifactDir = path.join(process.cwd(), diagnosticsDir, 'artifacts');
+            fs.mkdirSync(artifactDir, { recursive: true });
+
+            fs.writeFileSync(
+              path.join(artifactDir, 'artifacts.json'),
+              JSON.stringify(artifacts, null, 2)
+            );
+
+            fs.writeFileSync(
+              path.join(artifactDir, 'artifact-names.txt'),
+              artifacts.map((artifact) => artifact.name).join('\n')
+            );
+
+            core.setOutput('artifact-names', artifacts.map((artifact) => artifact.name).join('\n'));
+            core.setOutput('artifact-count', artifacts.length.toString());
+
+      - name: Download workflow artifacts
+        if: steps.list-artifacts.outputs["artifact-count"] != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ steps.pr-info.outputs.run-id }}
+          DIAGNOSTICS_DIR: ${{ env.DIAGNOSTICS_DIR }}
+        run: |
+          mkdir -p "${DIAGNOSTICS_DIR}/artifacts"
+          while IFS= read -r artifact_name || [ -n "$artifact_name" ]; do
+            echo "Downloading artifact: $artifact_name"
+            gh run download "$RUN_ID" --name "$artifact_name" --dir "${DIAGNOSTICS_DIR}/artifacts"
+          done < "${DIAGNOSTICS_DIR}/artifacts/artifact-names.txt"
 
       - name: Display structure of downloaded files
         run: ls -R ${DIAGNOSTICS_DIR}
@@ -132,6 +189,8 @@ jobs:
             ${DIAGNOSTICS_DIR}/diff.patch
             ${DIAGNOSTICS_DIR}/logs/failure-tail.log
             ${DIAGNOSTICS_DIR}/logs/error-snippets.log
+            ${DIAGNOSTICS_DIR}/artifacts/artifacts.json
+            ${DIAGNOSTICS_DIR}/artifacts/artifact-names.txt
             ${DIAGNOSTICS_DIR}/prompt.json
             ${DIAGNOSTICS_DIR}/llm-response.txt
 
