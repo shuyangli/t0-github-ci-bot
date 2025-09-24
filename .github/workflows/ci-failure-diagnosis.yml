@@ -71,7 +71,7 @@ jobs:
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff.patch"
 
       - name: Run custom action
-        uses: shuyangli/t0-typescript-action@18c2dbcad629d6000980496522514b6e5191c4a5
+        uses: shuyangli/t0-typescript-action@1ee0c9d0c5f19c77cfff8e4203c3c2d23d22884b
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts-dir: artifacts
@@ -80,13 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ci-failure-diagnostics
-          path: |
-            diagnostics/diff-summary.txt
-            diagnostics/diff.patch
-            diagnostics/logs/failure-tail.log
-            diagnostics/logs/error-snippets.log
-            diagnostics/artifacts/artifacts.json
-            diagnostics/artifacts/artifact-names.txt
+          path: diagnostics/
 
       # TODO: capture logs properly
       # - name: Discover workflow artifacts
