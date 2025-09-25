@@ -17,7 +17,7 @@ jobs:
     # TODO: only do this against main branch
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
-    name: Gather failure context
+    name: Gather failure context and generate PR
     env:
       DIAGNOSTICS_DIR: diagnostics
     steps:
