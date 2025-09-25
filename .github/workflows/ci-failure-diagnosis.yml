@@ -13,7 +13,7 @@ permissions:
   actions: read
 
 jobs:
-  gather-diff:
+  gather-diff-and-generate-patch:
     # TODO: only do this against main branch
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
@@ -28,22 +28,6 @@ jobs:
             sudo apt-get update &&
             sudo apt-get install -y gh
           )
-
-      - name: Start TensorZero gateway
-        run: |
-          docker pull tensorzero/gateway:latest
-          docker run -d --rm \
-            -e TENSORZERO_CLICKHOUSE_URL=${{ secrets.CLICKHOUSE_URL }} \
-            -e OPENAI_API_KEY=${{ secrets.OPENAIAPIKEY }} \
-            -p 3000:3000 \
-            tensorzero/gateway:latest --default-config
-
-          for i in {1..20}; do
-            curl -fsS http://localhost:3000/health && exit 0
-            sleep 3
-          done
-          echo "Gateway never became ready" >&2
-          exit 1
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -91,13 +75,22 @@ jobs:
 
       # Consider also downloading artifacts here
 
-  diagnose-and-revise:
-    needs: gather-diff
-    runs-on: ubuntu-latest
-    name: Call LLM diagnostics
-    env:
-      DIAGNOSTICS_DIR: diagnostics
-    steps:
+      - name: Start TensorZero gateway
+        run: |
+          docker pull tensorzero/gateway:latest
+          docker run -d --rm \
+            -e TENSORZERO_CLICKHOUSE_URL=${{ secrets.CLICKHOUSE_URL }} \
+            -e OPENAI_API_KEY=${{ secrets.OPENAIAPIKEY }} \
+            -p 3000:3000 \
+            tensorzero/gateway:latest --default-config
+
+          for i in {1..20}; do
+            curl -fsS http://localhost:3000/health && exit 0
+            sleep 3
+          done
+          echo "Gateway never became ready" >&2
+          exit 1
+
       - name: Call LLM to generate PR revision
         uses: shuyangli/t0-typescript-action@f3138660ed9c31c01b9f562d793c4ac40345b9ac
         with:
