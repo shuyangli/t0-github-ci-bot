@@ -2,8 +2,6 @@ name: TensorZero CI Diagnosis Bot
 
 on:
   workflow_run:
-    # TODO: Replace with the actual workflow(s) to monitor. This doesn't seem to work yet.
-    workflows: ["Dummy CI Failure"]
     types:
       - completed
 
