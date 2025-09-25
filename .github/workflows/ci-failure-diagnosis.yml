@@ -93,7 +93,7 @@ jobs:
           exit 1
 
       - name: Call LLM to generate PR revision
-        uses: shuyangli/t0-typescript-action/generate-pr-patch@dbe7fd327a07c8a7b6d0b6dc27753d6f98601385
+        uses: shuyangli/t0-typescript-action/generate-pr-patch@cfb02b5e75fbd72c383985e092f91f8cce408523
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           openai-api-key: ${{ secrets.OPENAIAPIKEY }}
