@@ -2,6 +2,7 @@ name: TensorZero CI Diagnosis Bot
 
 on:
   workflow_run:
+    workflows: ["Run Pytest"]
     types:
       - completed
 
