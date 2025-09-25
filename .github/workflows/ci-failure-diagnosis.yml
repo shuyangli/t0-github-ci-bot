@@ -79,6 +79,7 @@ jobs:
         run: |
           docker pull tensorzero/gateway:latest
           docker run -d --rm \
+            --name tensorzero-gateway \
             -e TENSORZERO_CLICKHOUSE_URL=${{ secrets.CLICKHOUSE_URL }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAIAPIKEY }} \
             -p 3000:3000 \
@@ -129,6 +130,6 @@ jobs:
             });
       
 
-      - name: Stop container
+      - name: Stop TensorZero gateway
         if: always()
-        run: docker stop tensorzero/gateway
+        run: docker stop tensorzero-gateway
