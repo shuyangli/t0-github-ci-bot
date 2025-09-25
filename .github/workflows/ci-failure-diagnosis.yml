@@ -109,20 +109,6 @@ jobs:
             diagnostics/
             custom-action-artifacts/
 
-      - name: Upload diagnostics bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-failure-diagnostics
-          path: |
-            ${DIAGNOSTICS_DIR}/diff-summary.txt
-            ${DIAGNOSTICS_DIR}/diff.patch
-            ${DIAGNOSTICS_DIR}/logs/failure-tail.log
-            ${DIAGNOSTICS_DIR}/logs/error-snippets.log
-            ${DIAGNOSTICS_DIR}/artifacts/artifacts.json
-            ${DIAGNOSTICS_DIR}/artifacts/artifact-names.txt
-            ${DIAGNOSTICS_DIR}/prompt.json
-            ${DIAGNOSTICS_DIR}/llm-response.txt
-
       - name: Post placeholder comment on PR
         uses: actions/github-script@v7
         with:
@@ -145,4 +131,4 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop tensorzero-gateway
+        run: docker stop tensorzero/gateway
