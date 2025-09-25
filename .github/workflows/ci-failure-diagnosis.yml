@@ -73,7 +73,15 @@ jobs:
           git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/pr.diff"
           export FULL_DIFF_PATH="${DIAGNOSTICS_DIR}/pr.diff"
 
-      # Consider also downloading artifacts here
+      - name: Collect artifacts from the failed workflow run
+        run: |
+          mkdir -p "${DIAGNOSTICS_DIR}"/failure-logs
+          cd "${DIAGNOSTICS_DIR}"/failure-logs
+          gh run download ${{ steps.pr-info.outputs.run-id }}
+          cd ../..
+
+          # print the contents of the logs directory
+          ls -la "${DIAGNOSTICS_DIR}/failure-logs"
 
       - name: Start TensorZero gateway
         run: |
