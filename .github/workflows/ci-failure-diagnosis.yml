@@ -110,7 +110,8 @@ jobs:
           tensorzero-base-url: http://localhost:3000
           diff-summary-path: diagnostics/diff-summary.txt
           full-diff-path: diagnostics/pr.diff
-          artifacts-dir: custom-action-artifacts
+          input-logs-dir: diagnostics/failure-logs
+          output-artifacts-dir: debug-logs
 
       - name: Upload diagnostics bundle
         if: always()
@@ -119,7 +120,7 @@ jobs:
           name: ci-failure-diagnostics
           path: |
             diagnostics/
-            custom-action-artifacts/
+            debug-logs/
 
       - name: Stop TensorZero gateway
         if: always()
