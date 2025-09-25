@@ -111,34 +111,15 @@ jobs:
           diff-summary-path: diagnostics/diff-summary.txt
           full-diff-path: diagnostics/pr.diff
           artifacts-dir: custom-action-artifacts
-      
+
       - name: Upload diagnostics bundle
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ci-failure-diagnostics
           path: |
             diagnostics/
             custom-action-artifacts/
-
-      - name: Post placeholder comment on PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number("${{ steps.pr-info.outputs.pr-number }}"),
-              body: [
-                `🤖 CI Failure Diagnostics (placeholder)`,
-                '',
-                `• Workflow Run ID: ${{ steps.pr-info.outputs.run-id }}`,
-                `• Captured a diff summary and logs for analysis.`,
-                `• LLM call not yet implemented. Replace the placeholder step in ci-failure-diagnosis.yml.`,
-                '',
-                `Artifacts: ci-failure-diagnostics`
-              ].join('\n')
-            });
-      
 
       - name: Stop TensorZero gateway
         if: always()
