@@ -110,7 +110,7 @@ jobs:
           tensorzero-base-url: http://localhost:3000
           diff-summary-path: diagnostics/diff-summary.txt
           full-diff-path: diagnostics/pr.diff
-          artifacts-dir: artifacts
+          artifacts-dir: custom-action-artifacts
       
       - name: Upload diagnostics bundle
         uses: actions/upload-artifact@v4
