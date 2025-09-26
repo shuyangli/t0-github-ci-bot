@@ -20,14 +20,6 @@ jobs:
     env:
       DIAGNOSTICS_DIR: diagnostics
     steps:
-      # TODO: delete this before actually sending it out
-      - name: Install GitHub CLI (act local only)
-        run: |
-          type -p gh >/dev/null || (
-            sudo apt-get update &&
-            sudo apt-get install -y gh
-          )
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -94,7 +86,7 @@ jobs:
           echo "model = \"openai::gpt-5\"" >> tensorzero.toml
           echo "" >> tensorzero.toml
           echo "[metrics.tensorzero_github_ci_bot_pr_merged]" >> tensorzero.toml
-          echo "type = \"boolean\"" >> tensorzero.toml
+          echo "type = \"float\"" >> tensorzero.toml
           echo "optimize = \"max\"" >> tensorzero.toml
           echo "level = \"inference\"" >> tensorzero.toml
 

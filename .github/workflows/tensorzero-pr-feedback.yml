@@ -24,7 +24,7 @@ jobs:
           echo "model = \"openai::gpt-5\"" >> tensorzero.toml
           echo "" >> tensorzero.toml
           echo "[metrics.tensorzero_github_ci_bot_pr_merged]" >> tensorzero.toml
-          echo "type = \"boolean\"" >> tensorzero.toml
+          echo "type = \"float\"" >> tensorzero.toml
           echo "optimize = \"max\"" >> tensorzero.toml
           echo "level = \"inference\"" >> tensorzero.toml
 
@@ -46,7 +46,7 @@ jobs:
           echo "Gateway never became ready" >&2
           exit 1
 
-      - name: Create PR Feedback
+      - name: Send PR Feedback
         uses: shuyangli/t0-typescript-action/create-pr-feedback@main
         with:
           token: ${{ github.token }}
