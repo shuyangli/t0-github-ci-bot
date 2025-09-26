@@ -84,6 +84,22 @@ jobs:
           # print the contents of the logs directory
           ls -la "${DIAGNOSTICS_DIR}/failure-logs"
 
+      - name: Write TensorZero metrics configuration
+        run: |
+          cat << EOF
+          [functions.tensorzero_github_ci_bot]
+          type = "chat"
+
+          [functions.tensorzero_github_ci_bot.variants.gpt_5]
+          type = "chat_completion"
+          model = "openai::gpt-5"
+
+          [metrics.tensorzero_github_ci_bot_pr_merged]
+          type = "boolean"
+          optimize = "max"
+          level = "inference"
+          EOF > tensorzero.toml
+
       - name: Start TensorZero gateway
         run: |
           docker pull tensorzero/gateway:latest
@@ -92,7 +108,7 @@ jobs:
             -e TENSORZERO_CLICKHOUSE_URL=${{ secrets.CLICKHOUSE_URL }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAIAPIKEY }} \
             -p 3000:3000 \
-            tensorzero/gateway:latest --default-config
+            tensorzero/gateway:latest --config-file ./tensorzero.toml
 
           for i in {1..20}; do
             curl -fsS http://localhost:3000/health && exit 0
@@ -117,6 +133,7 @@ jobs:
       - name: Upload diagnostics bundle
         if: always()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: ci-failure-diagnostics
           path: |
@@ -126,3 +143,4 @@ jobs:
       - name: Stop TensorZero gateway
         if: always()
         run: docker stop tensorzero-gateway
+        continue-on-error: true
