@@ -110,7 +110,7 @@ jobs:
             -p 3000:3000 \
             tensorzero/gateway:latest --config-file ./tensorzero.toml
 
-          for i in {1..20}; do
+          for i in {1..100}; do
             curl -fsS http://localhost:3000/health && exit 0
             sleep 3
           done
