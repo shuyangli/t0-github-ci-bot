@@ -10,4 +10,5 @@ app = FastAPI()
 @app.get("/")
 def read_root() -> Dict[str, str]:
     """Return a friendly greeting."""
+    test
     return {"message": "hello world"}
