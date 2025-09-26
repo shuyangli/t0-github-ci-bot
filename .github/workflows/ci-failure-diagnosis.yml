@@ -38,43 +38,22 @@ jobs:
               core.setFailed('No pull request found for the failing workflow run.');
               return;
             }
-
-            core.setOutput('pr-number', pr.number);
-            core.setOutput('base-ref', pr.base.ref);
-            core.setOutput('head-ref', pr.head.ref);
-            core.setOutput('head-sha', run.head_sha);
             core.setOutput('run-id', run.id);
-            core.setOutput('run-attempt', run.run_attempt);
       
       - name: Prepare diagnostics workspace
         run: |
           mkdir -p "${DIAGNOSTICS_DIR}"
 
-      - name: Fetch base branch for diff
-        run: |
-          git fetch origin "${{ steps.pr-info.outputs.base-ref }}"
-
-      - name: Capture PR diff summary
-        run: |
-          git diff --stat "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/diff-summary.txt"
-          export DIFF_SUMMARY_PATH="${DIAGNOSTICS_DIR}/diff-summary.txt"
-
-      - name: Capture full PR diff
-        run: |
-          git diff "origin/${{ steps.pr-info.outputs.base-ref }}...${{ steps.pr-info.outputs.head-sha }}" > "${DIAGNOSTICS_DIR}/pr.diff"
-          export FULL_DIFF_PATH="${DIAGNOSTICS_DIR}/pr.diff"
-
-      - name: Collect artifacts from the failed workflow run
+      - name: Collect logs from the failed workflow run
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p "${DIAGNOSTICS_DIR}"/failure-logs
-          cd "${DIAGNOSTICS_DIR}"/failure-logs
-          gh run download ${{ steps.pr-info.outputs.run-id }}
-          cd ../..
-
+          mkdir -p "${DIAGNOSTICS_DIR}"
+          cd "${DIAGNOSTICS_DIR}"
+          gh run view ${{ steps.pr-info.outputs.run-id }} --log-failed > failed-jobs.log
+          cd ..
           # print the contents of the logs directory
-          ls -la "${DIAGNOSTICS_DIR}/failure-logs"
+          ls -la "${DIAGNOSTICS_DIR}"
 
       - name: Write TensorZero metrics configuration
         run: |
@@ -119,9 +98,7 @@ jobs:
           token: ${{ github.token }}
           openai-api-key: ${{ secrets.OPENAIAPIKEY }}
           tensorzero-base-url: http://localhost:3000
-          diff-summary-path: diagnostics/diff-summary.txt
-          full-diff-path: diagnostics/pr.diff
-          input-logs-dir: diagnostics/failure-logs
+          input-logs-dir: diagnostics
           output-artifacts-dir: debug-logs
           clickhouse-url: ${{ secrets.CLICKHOUSE_URL }}
           clickhouse-table: GitHubBotPullRequestToInferenceMap

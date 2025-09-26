@@ -28,8 +28,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          set -o pipefail
-          uv run pytest > pytest_output.txt 2>&1
+          uv run pytest
 
       - name: Upload sample artifact
         if: always()
