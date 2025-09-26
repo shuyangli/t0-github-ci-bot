@@ -51,6 +51,10 @@ jobs:
         uses: shuyangli/t0-typescript-action/create-pr-feedback@main
         with:
           token: ${{ github.token }}
+          openai-api-key: ${{ secrets.OPENAIAPIKEY }}
+          tensorzero-base-url: http://localhost:3000
+          clickhouse-url: ${{ secrets.CLICKHOUSE_URL }}
+          clickhouse-table: GitHubBotPullRequestToInferenceMap
 
       - name: Stop TensorZero gateway
         if: always()
