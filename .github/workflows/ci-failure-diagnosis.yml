@@ -86,7 +86,12 @@ jobs:
           echo "model = \"openai::gpt-5\"" >> tensorzero.toml
           echo "" >> tensorzero.toml
           echo "[metrics.tensorzero_github_ci_bot_pr_merged]" >> tensorzero.toml
-          echo "type = \"float\"" >> tensorzero.toml
+          echo "type = \"boolean\"" >> tensorzero.toml
+          echo "optimize = \"max\"" >> tensorzero.toml
+          echo "level = \"inference\"" >> tensorzero.toml
+          echo "" >> tensorzero.toml
+          echo "[metrics.tensorzero_github_ci_bot_diff_patched_successfully]" >> tensorzero.toml
+          echo "type = \"boolean\"" >> tensorzero.toml
           echo "optimize = \"max\"" >> tensorzero.toml
           echo "level = \"inference\"" >> tensorzero.toml
 
