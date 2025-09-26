@@ -17,8 +17,6 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     name: Gather failure context and generate PR
-    env:
-      DIAGNOSTICS_DIR: diagnostics
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,20 +38,16 @@ jobs:
             }
             core.setOutput('run-id', run.id);
       
-      - name: Prepare diagnostics workspace
-        run: |
-          mkdir -p "${DIAGNOSTICS_DIR}"
-
       - name: Collect logs from the failed workflow run
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p "${DIAGNOSTICS_DIR}"
-          cd "${DIAGNOSTICS_DIR}"
+          mkdir -p diagnostics
+          cd diagnostics
           gh run view ${{ steps.pr-info.outputs.run-id }} --log-failed > failed-jobs.log
           cd ..
           # print the contents of the logs directory
-          ls -la "${DIAGNOSTICS_DIR}"
+          ls -la diagnostics
 
       - name: Write TensorZero metrics configuration
         run: |
@@ -95,9 +89,9 @@ jobs:
       - name: Call LLM to generate PR revision
         uses: shuyangli/t0-typescript-action/generate-pr-patch@main
         with:
-          token: ${{ github.token }}
           openai-api-key: ${{ secrets.OPENAIAPIKEY }}
           tensorzero-base-url: http://localhost:3000
+          tensorzero-diff-patched-successfully-metric-name: tensorzero_github_ci_bot_diff_patched_successfully
           input-logs-dir: diagnostics
           output-artifacts-dir: debug-logs
           clickhouse-url: ${{ secrets.CLICKHOUSE_URL }}
