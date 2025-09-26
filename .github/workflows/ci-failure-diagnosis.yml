@@ -111,6 +111,8 @@ jobs:
           full-diff-path: diagnostics/pr.diff
           input-logs-dir: diagnostics/failure-logs
           output-artifacts-dir: debug-logs
+          clickhouse-url: ${{ secrets.CLICKHOUSE_URL }}
+          clickhouse-table: GitHubBotPullRequestToInferenceMap
 
       - name: Upload diagnostics bundle
         if: always()
